@@ -1,0 +1,22 @@
+{
+    "name": "Habit Engin",
+    "version": "1",
+    "description": "Automate user habits online for a better experence",
+    "permissions": [
+	"*://*/*",
+	"tabs",
+	"geolocation",
+	"unlimitedStorage",
+	"notifications",
+	"contextMenus",
+	"history"
+    ],
+    "background_page": "background.html",
+    "content_script": [
+	{
+	    "matches": ["*://*/*"],
+	    "js": ["jquery.js", "pagemanage.js", "pagecheck.js"],
+	    "run_at": "document_start"
+	}
+    ]
+}

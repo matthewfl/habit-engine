@@ -1,0 +1,1 @@
+alert(chrome.extension.getURL('inpage.js'));
