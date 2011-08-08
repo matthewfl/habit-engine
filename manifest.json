@@ -2,21 +2,27 @@
     "name": "Habit Engin",
     "version": "1",
     "description": "Automate user habits online for a better experence",
+    "icons": {
+	"16": "icons/16.png",
+	"48": "icons/48.png",
+	"128": "icons/128.png"
+    },
     "permissions": [
 	"*://*/*",
 	"tabs",
 	"geolocation",
 	"unlimitedStorage",
+	"unlimited_storage",
 	"notifications",
 	"contextMenus",
 	"history"
     ],
     "background_page": "background.html",
-    "content_script": [
+    "content_scripts": [
 	{
 	    "matches": ["*://*/*"],
-	    "js": ["jquery.js", "pagemanage.js", "pagecheck.js"],
-	    "run_at": "document_start"
+	    "js": ["jquery.js", "pagemanage.js"],
+	    "run_at": "document_end"
 	}
     ]
 }

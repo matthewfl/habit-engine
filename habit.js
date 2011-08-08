@@ -1,10 +1,21 @@
+/*
+ * This is the core habit engine, it takes events and environments, and maps them together
+ * 
+ * states are contained in the this.states variable
+ ** absolute states are states that MUST match for an event to happen
+ ** range states are for numuric vaules that are approximate, such a scroll location
+ ** string states are for values of search boxes, or text feilds, it uses a bayes net
+ ** helps is for values that do a direct match, but if they are different, will not prohibit the event from happening
+ */
+
+
 function Habit (data, state) {
     this.data = data || {};
     this.state=state || {
 	absolute: {},
 	range: {},
 	string: {},
-	number: {}
+	helps: {}
     };
     this.code_source="";
     this.func=function () {};
@@ -21,7 +32,7 @@ Habit.prototype.compute = function () {
 		absolute: {},
 		range: {},
 		string: {},
-		number: {}
+		helps: {}
 	    };
 	    for(var i=0,a=this.data[event].length;i<a;i++) {
 		var work = this.data[event][i];
@@ -33,11 +44,11 @@ Habit.prototype.compute = function () {
 			dat.absolute[n].push(work.absolute[n]);
 		}
 		// basically the same as absolute, as we just want all possible cases
-		for(var n in work.number) {
-		    if(!dat.number[n])
-			dat.number[n]=[work.number[n]];
-		    else if(dat.number.indexOf(work.number[n])==-1)
-			dat.number[n].push(work.number[n]);
+		for(var n in work.helps) {
+		    if(!dat.helps[n])
+			dat.helps[n]=[work.helps[n]];
+		    else if(dat.helps.indexOf(work.helps[n])==-1)
+			dat.helps[n].push(work.helps[n]);
 		}
 		// this is for the range detect
 		// this sould find the max, min, avg, and standard deviation
@@ -53,7 +64,7 @@ Habit.prototype.compute = function () {
 		}
 		// process the string based data
 		for(var n in work.string) {
-		    var sp = work.string[n].split(" ");
+		    var sp = work.string[n].replace(/[^A-Za-z0-9]/g, " ").split(" ");
 		    
 		}
 	    }
@@ -93,8 +104,8 @@ Habit.prototype.change = function (type, name, value) {
 	this.state.string[name]=value;
 	break;
     case 4:
-    case "number":
-	this.state.number[name]=value;
+    case "helps":
+	this.state.helps[name]=value;
 	break;
     }
     var chance = this.func(this.state);
@@ -105,4 +116,13 @@ Habit.prototype.event = function (name) {
     if(typeof this.data[name] == "undefined")
 	this.data[name]=[];
     this.data[name].push(this.state);
+};
+
+Habit.prototype.addData = function (data) {
+    for(var n in data) {
+	if(this.data[n])
+	    this.data[n] = data[n].concat(this.data[n]);
+	else
+	    this.data[n] = data[n];
+    }
 };
