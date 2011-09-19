@@ -17,11 +17,11 @@
 	"contextMenus",
 	"history"
     ],
-    "background_page": "background.html",
+    "background_page": "kernel.html",
     "content_scripts": [
 	{
 	    "matches": ["*://*/*"],
-	    "js": ["jquery.js", "pagemanage.js"],
+	    "js": ["underscore.js", "jquery.js", "pagemanage.js"],
 	    "run_at": "document_end"
 	}
     ]
