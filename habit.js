@@ -183,12 +183,61 @@ Habit.computeRange = function (range) {
 
 Habit.codegen = function () {
     this.code = [];
+	this.vars = [];
+	this.events = {};
+	this.variable_count=0;
 };
 
-Habit.codegen.prototype.gen = function () {
+Habit.codegen.prototype.makeVar = function () {
+	var n = "_v"+ (this.variable_count++);
+	this.vars.push(n);
+	return n;
+}
+
+Habit.codegen.prototype.gen = function (events) {
     var code = "\/\/ This code requires the argument a with the state information\n";
+	this.events = events;
+	this.listEvents();
+	
+	this.absolute();
+	code += "var "+this.vars.join(",\n")+";"
     code += this.code.join('\n');
     return code;
+};
+
+Habit.codegen.prototype.listEvents = function () {
+	for(var name in this.events) {
+		this.vars.push("e_"+name);
+		this.code.push("e_"+name+" = .5;")
+	}
+};
+
+Habit.codegen.prototype.string = function () {
+	
+};
+
+Habit.codegen.prototype.range = function () {
+	
+};
+
+Habit.codegen.prototype.absolute = function () {
+	for(var name in this.events) {
+		for(var e in this.events[name][0].absolute) {
+			var n = this.makeVar();
+			var pos = {};
+			this.code.push(n+" = state.absolute."+name);
+			for(var len=this.events[name].length,i=0;i<len;i++) {
+				pos[this.events[name][i].absolute[e]] = true;
+			}
+			this.code.push("if (!(")
+			for(var a in pos) {
+				this.code.push("state.absolute."+e+" == "+JSON.stringify(a)+" ||")
+			}
+			this.code.push("false )) {")
+			this.code.push("e_"+name+" =0;");
+			this.code.push("}");
+		}
+	}
 };
 
 if(typeof exports == "object") // for testing inside node.js
